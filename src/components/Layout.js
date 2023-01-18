@@ -1,12 +1,22 @@
 import { alpha, makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import InputBase from "@material-ui/core/InputBase";
-import Badge from "@material-ui/core/Badge";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
+import {
+  Typography,
+  AppBar,
+  Toolbar,
+  IconButton,
+  InputBase,
+  Badge,
+  MenuItem,
+  Menu,
+  Drawer,
+  Button,
+  List,
+  Divider,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
+
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -14,18 +24,11 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import React from "react";
 import clsx from "clsx";
-import Drawer from "@material-ui/core/Drawer";
-import Button from "@material-ui/core/Button";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import PopUpModal, { handleOpen } from "./PopUpModal";
-
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -84,20 +87,29 @@ const useStyles = makeStyles((theme) => ({
   },
   sectionDesktop: {
     display: "none",
+    alignItems: "center",
+    color: "white",
     [theme.breakpoints.up("md")]: {
       display: "flex",
+      alignItems: "center",
+      color: "white",
     },
   },
   sectionMobile: {
     display: "flex",
+    alignItems: "center",
+    color: "white",
     [theme.breakpoints.up("md")]: {
       display: "none",
+      color: "white",
     },
   },
 }));
 
 export default function Layout() {
   const classes = useStyles();
+  const { user } = useSelector((state) => state.user);
+  console.log(user);
   const [state, setState] = React.useState({
     left: false,
   });
@@ -208,11 +220,6 @@ export default function Layout() {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
-          <PopUpModal />
-        </IconButton>
-      </MenuItem>
-      <MenuItem>
         <IconButton aria-label="show 11 new notifications" color="inherit">
           <Badge badgeContent={11} color="secondary">
             <NotificationsIcon />
@@ -236,7 +243,7 @@ export default function Layout() {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
+      <AppBar position="static" className="d-flex justify-content-center">
         <Toolbar>
           <Button onClick={toggleDrawer("left", true)}>
             <MenuIcon />
@@ -266,14 +273,23 @@ export default function Layout() {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton aria-label="show 4 new mails" color="inherit">
-              <PopUpModal />
-            </IconButton>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <Link
+              variant="contained"
+              color="primary"
+              size="small"
+              className="mx-2"
+              to={"/login"}
+            >
+              Login
+            </Link>
+            <Link
+              variant="contained"
+              color="primary"
+              size="small"
+              to={"/register"}
+            >
+              Register
+            </Link>
             <IconButton
               edge="end"
               aria-label="account of current user"
