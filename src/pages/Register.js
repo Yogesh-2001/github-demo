@@ -1,24 +1,29 @@
 import { message, Form } from "antd";
 import { TextField, Button } from "@material-ui/core";
 import { auth } from "../firebase/firebase.config";
+import { Link, useNavigate } from "react-router-dom";
 import { updateProfile, createUserWithEmailAndPassword } from "firebase/auth";
+import { setLoading } from "../redux/features/alertSlice";
+import { useDispatch } from "react-redux";
 const Register = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const onFinish = (values) => {
     const { email, password, name } = values;
-
+    dispatch(setLoading(true));
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = auth.currentUser;
         updateProfile(user, {
           displayName: name,
         });
-
-        console.log(user);
+        message.success("Registered Successfully");
+        navigate("/dashboard");
+        dispatch(setLoading(false));
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+        message.error(error.message);
+        dispatch(setLoading(true));
         // ..
       });
   };
@@ -77,6 +82,9 @@ const Register = () => {
       <Button variant="contained" color="primary" type="submit">
         Register
       </Button>
+      <p className="mt-2">
+        Already have an account ? <Link to="/">Login</Link>
+      </p>
     </Form>
   );
 };

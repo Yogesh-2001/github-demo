@@ -27,8 +27,12 @@ import clsx from "clsx";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { signOut } from "firebase/auth";
+import { auth } from ".././firebase/firebase.config";
+
+import { message } from "antd";
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -108,8 +112,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Layout() {
   const classes = useStyles();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
-  console.log(user);
   const [state, setState] = React.useState({
     left: false,
   });
@@ -256,7 +260,7 @@ export default function Layout() {
             {list("left")}
           </Drawer>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            <Link to={"/"}>Material UI</Link>
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -273,23 +277,19 @@ export default function Layout() {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <Link
-              variant="contained"
-              color="primary"
-              size="small"
-              className="mx-2"
-              to={"/login"}
-            >
-              Login
-            </Link>
-            <Link
-              variant="contained"
-              color="primary"
-              size="small"
-              to={"/register"}
-            >
-              Register
-            </Link>
+            {user && (
+              <Link
+                style={{ color: "inherit", textDecoration: "none" }}
+                onClick={async () => {
+                  await signOut(auth);
+                  message.success("Logged out");
+                  navigate("/", { replace: true });
+                }}
+              >
+                Logout
+              </Link>
+            )}
+
             <IconButton
               edge="end"
               aria-label="account of current user"

@@ -1,17 +1,15 @@
 import React from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 
-const PublicRoute = ({ children }) => {
-  const auth = getAuth();
-  const navigate = useNavigate();
-  onAuthStateChanged(auth, (user) => {
-    if (user.uid) {
-      return navigate("/");
-    } else {
-      return <>{children}</>;
-    }
-  });
+const ProtectedRoute = ({ children }) => {
+  const { user } = useSelector((state) => state.user);
+
+  if (user) {
+    return <Navigate to={"/dashboard"} replace={true} />;
+  } else {
+    return children;
+  }
 };
 
-export default PublicRoute;
+export default ProtectedRoute;

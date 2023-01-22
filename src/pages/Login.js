@@ -1,18 +1,26 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
-import React from "react";
 import { auth } from "../firebase/firebase.config";
 import { message, Form } from "antd";
 import { TextField, Button } from "@material-ui/core";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setLoading } from "../redux/features/alertSlice";
 const Login = () => {
-  const onFinish = (values) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const onFinish = async (values) => {
     const { email, password } = values;
-    signInWithEmailAndPassword(auth, email, password)
+    dispatch(setLoading(true));
+    await signInWithEmailAndPassword(auth, email, password)
       .then((userCred) => {
+        dispatch(setLoading(false));
+        navigate("/dashboard");
         message.success("logged in success");
-        console.log(userCred);
       })
       .catch((error) => {
-        message.error("logged in failed");
+        dispatch(setLoading(true));
+        console.log(error);
+        message.error(error.message);
       });
   };
 
@@ -58,6 +66,9 @@ const Login = () => {
       <Button variant="contained" color="primary" type="submit">
         Login
       </Button>
+      <p className="m-2">
+        Don't have an account ? <Link to="/register">Register</Link>
+      </p>
     </Form>
   );
 };
