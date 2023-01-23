@@ -22,17 +22,21 @@ import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import React from "react";
+import React, { useEffect } from "react";
 import clsx from "clsx";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
+import DescriptionIcon from "@material-ui/icons/Description";
+import NoteAddIcon from "@material-ui/icons/NoteAdd";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import DashboardIcon from "@material-ui/icons/Dashboard";
 import MailIcon from "@material-ui/icons/Mail";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { signOut } from "firebase/auth";
-import { auth } from ".././firebase/firebase.config";
-
+import { auth, db } from ".././firebase/firebase.config";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { message } from "antd";
+import { collection, getDocs, where } from "firebase/firestore";
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -130,6 +134,19 @@ export default function Layout() {
     setState({ ...state, [anchor]: open });
   };
 
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const querySnapshot = await getDocs(
+  //       collection(db, "students"),
+  //       where("userId", "==", user && user.uid)
+  //     );
+  //     querySnapshot.forEach((doc) => {
+  //       // doc.data() is never undefined for query doc snapshots
+  //       console.log(doc.id, " => ", doc.data());
+  //     });
+  //   };
+  //   getUser();
+  // }, []);
   const list = (anchor) => (
     <div
       className={clsx(classes.list, {
@@ -154,23 +171,36 @@ export default function Layout() {
       </div>
       <Divider />
       <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
+        {[
+          {
+            text: "Dashboard",
+            path: "/dashboard",
+            icon: <DashboardIcon />,
+          },
+          {
+            text: "Create Profile",
+            path: "/create-profile",
+            icon: <AccountCircleIcon />,
+          },
+          {
+            text: "Add Student",
+            path: "/admin/add-student",
+            icon: <GroupAddIcon />,
+          },
+          {
+            text: "Add Notice",
+            path: "/admin/add-notice",
+            icon: <DescriptionIcon />,
+          },
+          {
+            text: "Add Placement Drive",
+            path: "/admin/add-drive",
+            icon: <NoteAddIcon />,
+          },
+        ].map((doc, index) => (
+          <ListItem button key={doc.text}>
+            <ListItemIcon>{doc.icon}</ListItemIcon>
+            <ListItemText primary={<Link to={doc.path}>{doc.text}</Link>} />
           </ListItem>
         ))}
       </List>

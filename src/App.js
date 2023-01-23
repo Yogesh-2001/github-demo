@@ -11,6 +11,8 @@ import { setUser } from "./redux/features/userSlice";
 import { auth } from "./firebase/firebase.config";
 import { onAuthStateChanged } from "firebase/auth";
 import PublicRoute from "./components/PublicRoute";
+import AddStudent from "./pages/admin/AddStudent";
+import CreateProfile from "./pages/student/CreateProfile";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,6 +39,14 @@ function App() {
             }
           />
           <Route
+            path="/create-profile"
+            element={
+              <ProtectedRoute>
+                <CreateProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/register"
             element={
               <PublicRoute>
@@ -50,6 +60,14 @@ function App() {
               <PublicRoute>
                 <Login />
               </PublicRoute>
+            }
+          />
+          <Route
+            path="/admin/add-student/"
+            element={
+              <ProtectedRoute>
+                <AddStudent />
+              </ProtectedRoute>
             }
           />
         </Routes>
