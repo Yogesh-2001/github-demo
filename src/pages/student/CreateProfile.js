@@ -2,21 +2,27 @@ import React from "react";
 import { DatePicker, Form, Input, message, Radio, Select, Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Box, Button, Card } from "@material-ui/core";
-import { db, storage } from "../../firebase/firebase.config";
+import { auth, db, storage } from "../../firebase/firebase.config";
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage";
 import { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
 const CreateProfile = () => {
   const [progress, setProgress] = useState(0);
+
   const [details, setDetails] = useState({});
   const onFinish = async (values) => {
     setDetails(values);
-    getResumeFileUrl(values.profilephoto[0]);
-    getImageFileUrl(values.resume[0]);
+    getResumeFileUrl(values.resume[0], values);
+    getImageFileUrl(values.profilephoto[0], values);
+    details.resume && details.profilephoto && sendData();
+  };
 
+  const sendData = async () => {
     const docRef = await addDoc(collection(db, "profiledetails"), {
       ...details,
-      dob: details ? details.dob.$d : "",
+      dob: details && details.dob.$d,
+      //   dob: details && details.dob.$d,
     });
     if (docRef) {
       message.success("Details added success");
@@ -26,7 +32,7 @@ const CreateProfile = () => {
     }
   };
 
-  const getImageFileUrl = (value) => {
+  const getImageFileUrl = (value, values) => {
     const storageref = ref(storage, `profile-photos/${value.name}`);
     const uploadTask = uploadBytesResumable(storageref, value.originFileObj);
     uploadTask.on(
@@ -42,16 +48,21 @@ const CreateProfile = () => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+          console.log(2);
           setDetails({
             ...details,
             profilephoto: downloadUrl && downloadUrl,
+          });
+          const user = auth.currentUser;
+          updateProfile(user, {
+            photoURL: downloadUrl,
           });
         });
       }
     );
   };
 
-  const getResumeFileUrl = (value) => {
+  const getResumeFileUrl = (value, values) => {
     const storageref = ref(storage, `resumes/${value.name}`);
     const uploadTask = uploadBytesResumable(storageref, value.originFileObj);
     uploadTask.on(
@@ -68,8 +79,9 @@ const CreateProfile = () => {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
           console.log(downloadUrl);
+          console.log(1);
           setDetails({
-            ...details,
+            ...values,
             resume: downloadUrl && downloadUrl,
           });
           console.log(details);

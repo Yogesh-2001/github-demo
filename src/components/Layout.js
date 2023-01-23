@@ -16,7 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@material-ui/core";
-
+import Avatar from "@material-ui/core/Avatar";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -328,7 +328,7 @@ export default function Layout() {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <AccountCircle />
+              <Avatar alt="profile-photo" src={user.providerData[0].photoURL} />
             </IconButton>
           </div>
           <div className={classes.sectionMobile}>
